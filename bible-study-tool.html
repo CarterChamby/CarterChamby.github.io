@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Bible Study">
+<meta name="theme-color" content="#0f1117">
+<title>Bible Study Reference</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0f1117;
+  --bg2: #181c27;
+  --bg3: #1f2437;
+  --border: rgba(255,255,255,0.08);
+  --border2: rgba(255,255,255,0.14);
+  --text: #e8e4d9;
+  --text2: #9a9585;
+  --text3: #5c5850;
+  --gold: #c9a84c;
+  --gold2: #e8c97a;
+  --gold-dim: rgba(201,168,76,0.12);
+  --blue: #5b8fd4;
+  --blue-dim: rgba(91,143,212,0.12);
+  --green: #7ab87a;
+  --green-dim: rgba(122,184,122,0.1);
+  --amber: #d4904c;
+  --amber-dim: rgba(212,144,76,0.1);
+  --red: #c46060;
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+html, body {
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  overflow: hidden;
+}
+
+/* ── APP SHELL ── */
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* ── HEADER ── */
+.header {
+  flex-shrink: 0;
+  padding: 14px 16px 10px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg);
+}
+
+.header-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.logo-mark {
+  width: 30px;
+  height: 30px;
+  border: 1px solid var(--gold);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.logo-mark svg { width: 16px; height: 16px; fill: var(--gold); }
+
+.header-title {
+  font-family: 'Crimson Pro', serif;
+  font-size: 20px;
+  font-weight: 300;
+  color: var(--text);
+  letter-spacing: 0.01em;
+  flex: 1;
+}
+
+.book-switcher {
+  display: flex;
+  gap: 4px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 3px;
+}
+
+.book-btn {
+  flex: 1;
+  padding: 6px 10px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  border: none;
+  border-radius: 5px;
+  background: transparent;
+  color: var(--text2);
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.book-btn.active {
+  background: var(--gold);
+  color: #0f1117;
+}
+
+/* ── SEARCH ── */
+.search-wrap {
+  position: relative;
+}
+
+.search-wrap svg {
+  position: absolute;
+  left: 11px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 15px;
+  height: 15px;
+  stroke: var(--text3);
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.search-input {
+  width: 100%;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  padding: 9px 12px 9px 34px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.search-input:focus { border-color: var(--gold); }
+.search-input::placeholder { color: var(--text3); }
+
+/* ── SECTION NAV (scrollable horizontal tabs) ── */
+.section-nav {
+  flex-shrink: 0;
+  overflow-x: auto;
+  display: flex;
+  gap: 6px;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg);
+  scrollbar-width: none;
+}
+.section-nav::-webkit-scrollbar { display: none; }
+
+.sec-tab {
+  flex-shrink: 0;
+  padding: 6px 12px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: transparent;
+  color: var(--text2);
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.sec-tab.active {
+  background: var(--gold-dim);
+  border-color: var(--gold);
+  color: var(--gold2);
+}
+
+/* ── SCROLLABLE LIST ── */
+.list-area {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px 12px calc(12px + var(--safe-bottom));
+  scrollbar-width: thin;
+  scrollbar-color: var(--bg3) transparent;
+}
+
+.list-area::-webkit-scrollbar { width: 3px; }
+.list-area::-webkit-scrollbar-track { background: transparent; }
+.list-area::-webkit-scrollbar-thumb { background: var(--bg3); border-radius: 2px; }
+
+.section-label {
+  font-family: 'Crimson Pro', serif;
+  font-size: 13px;
+  font-weight: 400;
+  font-style: italic;
+  color: var(--text3);
+  padding: 4px 4px 8px;
+  letter-spacing: 0.03em;
+}
+
+/* ── CHAPTER CARD ── */
+.card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  margin-bottom: 8px;
+  overflow: hidden;
+  transition: border-color 0.15s;
+}
+
+.card.open { border-color: var(--gold); }
+
+.card-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.card-num {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text2);
+  margin-top: 1px;
+}
+
+.card.open .card-num {
+  background: var(--gold-dim);
+  border-color: var(--gold);
+  color: var(--gold2);
+}
+
+.card-main { flex: 1; min-width: 0; }
+
+.card-title {
+  font-family: 'Crimson Pro', serif;
+  font-size: 16px;
+  font-weight: 400;
+  color: var(--text);
+  margin-bottom: 3px;
+  line-height: 1.3;
+}
+
+.card-summary {
+  font-size: 12px;
+  color: var(--text2);
+  line-height: 1.55;
+}
+
+.badges { display: flex; gap: 4px; margin-bottom: 5px; flex-wrap: wrap; }
+
+.badge {
+  font-size: 10px;
+  font-weight: 500;
+  padding: 2px 7px;
+  border-radius: 10px;
+  letter-spacing: 0.03em;
+}
+
+.badge-disc { background: var(--blue-dim); color: var(--blue); border: 1px solid rgba(91,143,212,0.2); }
+.badge-narr { background: var(--green-dim); color: var(--green); border: 1px solid rgba(122,184,122,0.2); }
+.badge-ot { background: var(--amber-dim); color: var(--amber); border: 1px solid rgba(212,144,76,0.2); }
+.badge-paul { background: var(--gold-dim); color: var(--gold2); border: 1px solid rgba(201,168,76,0.2); }
+
+.chevron {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  stroke: var(--text3);
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: transform 0.2s;
+  margin-top: 6px;
+}
+
+.card.open .chevron { transform: rotate(180deg); stroke: var(--gold); }
+
+/* ── CARD BODY ── */
+.card-body {
+  display: none;
+  padding: 0 14px 14px;
+  border-top: 1px solid var(--border);
+  margin-top: 0;
+}
+
+.card.open .card-body { display: block; }
+
+.detail-section { margin-top: 12px; }
+
+.detail-label {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-bottom: 7px;
+}
+
+.arg-item {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 6px;
+  align-items: flex-start;
+}
+
+.arg-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--gold);
+  margin-top: 6px;
+  flex-shrink: 0;
+  opacity: 0.6;
+}
+
+.arg-dot.ot { background: var(--amber); }
+
+.arg-text {
+  font-size: 13px;
+  color: var(--text2);
+  line-height: 1.6;
+}
+
+.key-verse {
+  margin-top: 10px;
+  padding: 10px 12px;
+  background: var(--gold-dim);
+  border-left: 2px solid var(--gold);
+  border-radius: 0 6px 6px 0;
+  font-family: 'Crimson Pro', serif;
+  font-size: 14px;
+  font-style: italic;
+  color: var(--gold2);
+  line-height: 1.6;
+}
+
+.ot-section {
+  margin-top: 10px;
+  padding: 9px 12px;
+  background: var(--amber-dim);
+  border-left: 2px solid var(--amber);
+  border-radius: 0 6px 6px 0;
+  font-size: 12px;
+  color: var(--amber);
+  line-height: 1.5;
+}
+
+.no-results {
+  text-align: center;
+  color: var(--text3);
+  font-size: 14px;
+  padding: 40px 20px;
+  font-family: 'Crimson Pro', serif;
+  font-style: italic;
+}
+
+.result-book-label {
+  font-family: 'Crimson Pro', serif;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--gold);
+  padding: 10px 4px 6px;
+  letter-spacing: 0.02em;
+}
+
+mark {
+  background: rgba(201,168,76,0.25);
+  color: var(--gold2);
+  border-radius: 2px;
+  padding: 0 1px;
+}
+
+/* ── LEGEND STRIP ── */
+.legend {
+  flex-shrink: 0;
+  display: flex;
+  gap: 12px;
+  padding: 6px 16px 0;
+  align-items: center;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.legend::-webkit-scrollbar { display: none; }
+.legend-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text3); white-space: nowrap; }
+
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-top">
+      <div class="logo-mark">
+        <svg viewBox="0 0 16 16"><path d="M2 2h12v1H2zM2 4h8v1H2zM2 6h12v1H2zM2 8h6v1H2zM2 10h10v1H2zM2 12h5v1H2z"/></svg>
+      </div>
+      <div class="header-title">Bible Study Reference</div>
+    </div>
+
+    <div class="book-switcher" style="margin-bottom:10px;">
+      <button class="book-btn active" id="btnPaul" onclick="switchBook('paul')">Paul's Epistles</button>
+      <button class="book-btn" id="btnMatt" onclick="switchBook('matthew')">Matthew</button>
+    </div>
+
+    <div class="search-wrap">
+      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input class="search-input" id="searchInput" type="search" placeholder="Search topics, arguments, OT refs…" oninput="onSearch()" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+    </div>
+  </div>
+
+  <!-- LEGEND (matthew only) -->
+  <div class="legend" id="legendBar" style="display:none; padding-bottom:6px;">
+    <span class="legend-item"><span class="badge badge-disc">Discourse</span> Teaching block</span>
+    <span class="legend-item"><span class="badge badge-narr">Narrative</span> Event block</span>
+    <span class="legend-item"><span class="badge badge-ot">OT Focus</span> Heavy fulfillment</span>
+  </div>
+
+  <!-- SECTION NAV -->
+  <div class="section-nav" id="sectionNav"></div>
+
+  <!-- LIST -->
+  <div class="list-area" id="listArea"></div>
+
+</div>
+
+<script>
+// ════════════════════════════════════════════════
+//  DATA
+// ════════════════════════════════════════════════
+
+const PAUL = [
+  {
+    id:"romans", name:"Romans",
+    meta:"Jewish & Gentile believers in Rome · Righteousness of God revealed in the gospel",
+    chapters:[
+      {n:1,t:"Gospel power & humanity's guilt",s:"Paul introduces himself and the gospel. All humanity is without excuse — Gentiles suppressed truth in unrighteousness, leading to moral collapse.",args:["The gospel is the power of God for salvation to all who believe (v.16)","God's wrath revealed against all ungodliness","Gentiles knew God through creation but chose idolatry","Moral degeneracy follows the rejection of God"],v:"For I am not ashamed of the gospel… it is the power of God that brings salvation to everyone who believes (1:16)"},
+      {n:2,t:"Jews equally under judgment",s:"Moral condemnation applies to the self-righteous too. Having the law doesn't excuse breaking it. The true Jew is one inwardly.",args:["God judges impartially — both with and without the law","Knowing the law and doing the law are different things","Circumcision of the heart, not flesh, is what matters","Gentiles who keep the law's intent condemn those who don't"],v:"You who preach against stealing, do you steal? (2:21)"},
+      {n:3,t:"All sinners, one justification",s:"Every person is under sin. But God's righteousness comes through faith in Christ as an atoning sacrifice.",args:["'There is none righteous, not even one' — universal sinfulness","The law silences boasting by making everyone accountable","Justification is a gift of grace through the redemption of Christ","God is just AND the justifier of the one who has faith in Jesus"],v:"For all have sinned and fall short of the glory of God (3:23)"},
+      {n:4,t:"Abraham: faith, not works",s:"Abraham was justified by faith before circumcision, proving righteousness has always been credited through faith, not law-keeping.",args:["Abraham believed God — credited as righteousness (Gen 15)","Justification preceded circumcision — Gentiles are heirs too","The promise came through faith, not the law","Abraham's faith: believed God could give life from a dead womb"],v:"Abraham believed God, and it was credited to him as righteousness (4:3)"},
+      {n:5,t:"Peace, hope & two Adams",s:"Justification brings peace with God and hope. Adam's sin brought death to all; Christ's obedience brings life to all who believe.",args:["Justification = peace with God, access to grace, hope of glory","Suffering → endurance → character → hope","God demonstrates love: Christ died for us while we were sinners","Adam/Christ: one man's sin vs. one man's righteousness"],v:"God demonstrates his own love for us in this: While we were still sinners, Christ died for us (5:8)"},
+      {n:6,t:"Dead to sin, alive to God",s:"Baptism unites us with Christ's death and resurrection. We are no longer slaves to sin but instruments of righteousness.",args:["'Shall we sin so grace may abound?' — by no means!","Baptism = burial with Christ → resurrection to new life","Old self crucified: sin's power broken","Offer yourselves to God as those alive from the dead"],v:"For sin shall no longer be your master, because you are not under the law, but under grace (6:14)"},
+      {n:7,t:"The law's limits & inner conflict",s:"Christians are released from the law. The law reveals sin but cannot free from it. Paul describes the anguish of wanting to obey but being unable by flesh alone.",args:["Dead to the law through the body of Christ","The law is holy, righteous, good — but reveals sin","The inner conflict: 'I do what I don't want to do'","The law of sin at war with the law of the mind"],v:"What a wretched man I am! Who will rescue me from this body that is subject to death? (7:24)"},
+      {n:8,t:"Life in the Spirit",s:"No condemnation for those in Christ. The Spirit gives life and guarantees adoption. Nothing separates us from God's love.",args:["No condemnation — law of Spirit of life sets free","Those led by the Spirit are children of God","All things work together for good for those called","The golden chain: predestined → called → justified → glorified","Nothing in all creation can separate us from God's love"],v:"For I am convinced that neither death nor life… will be able to separate us from the love of God (8:38)"},
+      {n:9,t:"God's sovereignty in election",s:"Israel's rejection of Christ doesn't mean God's word failed. God's election is sovereign — not based on birth, works, or will but on his calling.",args:["True Israel defined by faith, not ethnicity","God chose Jacob over Esau before birth — election is free","God has mercy on whom he will — the potter and clay","God is calling a people from both Jews and Gentiles"],v:"It does not, therefore, depend on human desire or effort, but on God's mercy (9:16)"},
+      {n:10,t:"Israel's responsibility",s:"Israel's failure is their own — they pursued law-righteousness, not faith-righteousness. The gospel is for everyone who calls on the name of the Lord.",args:["Righteousness based on faith vs. law-righteousness","Christ is the end of the law for righteousness to everyone who believes","'Confess with mouth, believe in heart' — the word of faith is near","Salvation requires hearing; hearing requires a preacher","Israel heard but did not obey"],v:"For everyone who calls on the name of the Lord will be saved (10:13)"},
+      {n:11,t:"Israel's future restoration",s:"God has not rejected Israel — a remnant is saved. Gentile inclusion is partial; all Israel will be saved in the end.",args:["There is a remnant of Israel by grace, not works","Israel's stumble = riches for Gentiles — how much more their fullness?","Olive tree: Gentiles grafted in, Israel can be grafted back","All Israel will be saved — the deliverer will come from Zion","His judgments are unsearchable, his paths beyond tracing out"],v:"Oh, the depth of the riches of the wisdom and knowledge of God! (11:33)"},
+      {n:12,t:"Living sacrifices & love",s:"Offer yourself to God as a living sacrifice. Use gifts for the body. Overcome evil with good.",args:["Present bodies as living sacrifices — be transformed, not conformed","Think with sober judgment; we are one body","Use spiritual gifts (prophecy, service, teaching) according to grace","Bless persecutors; weep with those who weep","Overcome evil with good"],v:"Do not conform to the pattern of this world, but be transformed by the renewing of your mind (12:2)"},
+      {n:13,t:"Government, love & the hour",s:"Submit to governing authorities as God's servants. Love fulfills the law. Salvation is nearer than when we first believed.",args:["Governing authorities are God's servants for good","Pay taxes, honor, and respect to whom they are due","Love your neighbor as yourself — love fulfills the law","The night is almost gone; put on the armor of light"],v:"Let no debt remain outstanding, except the continuing debt to love one another (13:8)"},
+      {n:14,t:"The strong and the weak",s:"Don't judge others on disputable matters. The kingdom of God is not eating and drinking. Pursue peace and mutual upbuilding.",args:["Accept the weak in faith without quarreling over disputable matters","Each will give account to God — stop judging one another","Nothing unclean in itself, but unclean for one who thinks so","Build each other up — don't destroy with your freedom"],v:"For the kingdom of God is not a matter of eating and drinking, but of righteousness, peace and joy in the Holy Spirit (14:17)"},
+      {n:15,t:"Unity & Paul's mission",s:"Bear with the weak as Christ did. Gentiles and Jews glorify God together. Paul outlines his mission and plans to visit Rome.",args:["Christ became servant of the Jews to confirm promises","Gentiles can glorify God too — accept one another as Christ accepted you","Paul's ambition: preach where Christ is not yet known","Request prayer for Jerusalem and the coming visit"],v:"Accept one another, then, just as Christ accepted you, in order to bring praise to God (15:7)"},
+      {n:16,t:"Greetings & final warning",s:"Paul commends Phoebe, greets many co-workers, warns against those causing division, closes with a doxology.",args:["Phoebe: a deacon and patron — commended to the church","Priscilla and Aquila risked their lives for Paul","Watch out for those who cause divisions contrary to doctrine","Doxology: to the only wise God through Jesus Christ"],v:"The God of peace will soon crush Satan under your feet (16:20)"},
+    ]
+  },
+  {
+    id:"1cor", name:"1 Corinthians",
+    meta:"Troubled church at Corinth · The cross reorders all wisdom, ethics, gifts, and hope",
+    chapters:[
+      {n:1,t:"Divisions & the foolishness of the cross",s:"The church is split into factions. Paul rebukes this as worldly. The cross demolishes human wisdom.",args:["Divisions around leaders (Paul, Apollos, Cephas) are worldly","The cross: foolishness to the perishing, power of God to the saved","God chose the foolish and weak to shame the wise and strong","Boast in the Lord alone — Christ is our wisdom and righteousness"],v:"For the foolishness of God is wiser than human wisdom (1:25)"},
+      {n:2,t:"Spirit-revealed wisdom",s:"Paul came in weakness, not rhetoric. True wisdom is revealed by the Spirit — the deep things of God.",args:["Paul resolved to know nothing but Christ crucified","Message demonstrated by Spirit's power, not persuasive words","The Spirit searches all things, even the deep things of God","The spiritual person judges all; the natural person cannot receive them"],v:"The Spirit searches all things, even the deep things of God (2:10)"},
+      {n:3,t:"Spiritual infants & God's building",s:"The Corinthians are still fleshly. Leaders are servants; the church is God's field and building.",args:["Jealousy and quarreling = worldliness, not maturity","Paul planted, Apollos watered — God gives the growth","Each builder tested by fire on the last day","The church is God's temple — the Spirit dwells in it"],v:"For we are co-workers in God's service; you are God's field, God's building (3:9)"},
+      {n:4,t:"Apostles as servants",s:"Apostles are stewards, not celebrities. Paul contrasts Corinthian pride with apostolic suffering and calls them to imitate him.",args:["Required of stewards: be faithful, not impressive","Don't go beyond 'what is written' — pride inflates unnecessarily","Apostles are spectacles of suffering — fools for Christ","I urge you to imitate me — Paul as their spiritual father"],v:"I am not writing this to shame you, but to warn you as my dear children (4:14)"},
+      {n:5,t:"Church discipline: sexual immorality",s:"A man is sleeping with his stepmother. Paul commands expulsion — a little leaven leavens the whole batch.",args:["The church is proud instead of mourning — toleration is wrong","Hand him over to Satan for destruction of the flesh","The church must expel the immoral person among them","Do not associate with someone who claims to be a brother yet lives immorally"],v:"Don't you know that a little yeast leavens the whole batch of dough? (5:6)"},
+      {n:6,t:"Lawsuits & sexual ethics",s:"Believers suing in pagan courts is shameful. Your bodies belong to Christ — sexual immorality sins against your own body.",args:["Settle disputes within the church, not before unbelieving judges","The unrighteous will not inherit the kingdom — list of vices","The body is not for sexual immorality but for the Lord","You were bought at a price — honor God with your bodies"],v:"Do you not know that your bodies are temples of the Holy Spirit? (6:19)"},
+      {n:7,t:"Marriage, singleness & calling",s:"Marriage is good; singleness is a gift for undivided devotion. Each should live in the calling they were given.",args:["Marriage is good; celibacy is a spiritual gift","The married should not deprive one another","Believer should not leave unbelieving spouse if spouse is willing","Remain as you are — the time is short","The unmarried can focus on the things of the Lord"],v:"Each person should live as a believer in whatever situation the Lord has assigned to them (7:17)"},
+      {n:8,t:"Food offered to idols: knowledge vs. love",s:"Idols are nothing — the strong know this. But knowledge puffs up; love builds up. Don't cause a weaker brother to stumble.",args:["There is only one God — idols are nothing","Not everyone has this knowledge — some are wounded by your freedom","Knowledge without love becomes arrogance","Sin against the weak = sin against Christ"],v:"Knowledge puffs up while love builds up (8:1)"},
+      {n:9,t:"Paul's rights & self-discipline",s:"Paul has apostolic rights but waives them for the gospel's sake. He becomes all things to all people. He disciplines himself to win.",args:["Apostles have a right to material support","Paul waives all rights to remove obstacles to the gospel","To Jews like a Jew; to Gentiles like a Gentile — all things to all","I beat my body and make it my slave — self-discipline for the prize"],v:"I have become all things to all people so that by all possible means I might save some (9:22)"},
+      {n:10,t:"Idolatry, Israel's warnings & freedom",s:"Israel's wilderness failures are warnings for us. Don't participate in idolatry. Do all to God's glory.",args:["Israel had spiritual food and drink (Christ) yet fell — don't be overconfident","These things happened as examples — flee idolatry","You cannot share the Lord's table and the table of demons","All is lawful, not all is beneficial — pursue the good of others"],v:"So, if you think you are standing firm, be careful that you don't fall! (10:12)"},
+      {n:11,t:"Head coverings & Lord's Supper",s:"On worship order. The Lord's Supper is being abused — some eat and drink judgment by not discerning the body.",args:["Head coverings reflect God-Christ-man-woman relational order","The Supper is a proclamation of the Lord's death until he comes","Eating unworthily = guilt against Christ's body","Examine yourself before eating — some are sick and dying for not discerning"],v:"For whenever you eat this bread and drink this cup, you proclaim the Lord's death until he comes (11:26)"},
+      {n:12,t:"Spiritual gifts & one body",s:"Gifts are varied but from one Spirit for the common good. The church is one body with many members — all necessary.",args:["Same Spirit distributes different gifts as he determines","Gifts: wisdom, knowledge, faith, healing, prophecy, tongues, interpretation","The body is one with many parts — all are necessary","God placed the parts for his own purposes"],v:"All these are the work of one and the same Spirit (12:11)"},
+      {n:13,t:"The supremacy of love",s:"Without love, all gifts are worthless. Love's character is defined. Love never fails — prophecy and tongues will pass away.",args:["Without love: tongues = clanging; prophecy = nothing; generosity = nothing","Love's character: patient, kind, not envious, not proud, endures all","Prophecy and knowledge are partial — love is complete","Faith, hope, love remain — the greatest is love"],v:"And now these three remain: faith, hope and love. But the greatest of these is love (13:13)"},
+      {n:14,t:"Tongues, prophecy & order",s:"Prophecy builds up the church; tongues without interpretation edify only self. Worship must be orderly.",args:["Desire to prophesy — it builds up the church","Tongues without interpretation = no benefit to the body","In church: five intelligible words better than ten thousand in a tongue","God is not a God of disorder — let all be done for building up"],v:"Everything should be done in a fitting and orderly way (14:40)"},
+      {n:15,t:"The resurrection: cornerstone of the gospel",s:"Christ's resurrection is historically attested and theologically essential. If resurrection is false, the gospel is false.",args:["Gospel: Christ died, buried, rose, appeared to many (500+)","If no resurrection: faith is futile, we are still in sins","Adam brought death; Christ brings resurrection — firstfruits, then those who belong to him","Body sown perishable, raised imperishable — spiritual body","Death swallowed up in victory — sting of death is sin, strength of sin is the law"],v:"For as in Adam all die, so in Christ all will be made alive (15:22)"},
+      {n:16,t:"Collection & closing plans",s:"Instructions for the Jerusalem collection. Travel plans. Final greetings and call to stand firm.",args:["Set aside money weekly as God has prospered you","Paul plans to visit via Macedonia","Household of Stephanas: devoted to the saints — submit to such people","Be on guard, stand firm in the faith, be courageous, do everything in love"],v:"Be on your guard; stand firm in the faith; be courageous; be strong (16:13)"},
+    ]
+  },
+  {
+    id:"2cor", name:"2 Corinthians",
+    meta:"Corinth after a painful visit · Apostolic ministry through weakness and genuine love",
+    chapters:[
+      {n:1,t:"Comfort in suffering & sincerity",s:"Paul's afflictions overflow — but so does comfort from God. He defends his change of travel plans: it was mercy, not unreliability.",args:["God comforts us so we can comfort others with the same comfort","Paul's suffering in Asia: learned to rely on God, not himself","Paul's conduct: by grace, not fleshly wisdom","Change of plans was out of mercy, not inconsistency"],v:"He comforts us in all our troubles, so that we can comfort those in any trouble (1:4)"},
+      {n:2,t:"Forgiveness & the aroma of Christ",s:"Paul urges forgiveness of the disciplined man. Ministers are the aroma of Christ to some life, to some death.",args:["Forgive and comfort the repentant man — don't be overwhelmed by sorrow","But thanks be to God who leads us in triumphal procession in Christ","We are the aroma of Christ — to some life, to some death"],v:"But thanks be to God, who always leads us as captives in Christ's triumphal procession (2:14)"},
+      {n:3,t:"Ministers of the new covenant",s:"The Corinthians are Paul's letter of recommendation. The new covenant surpasses the old — written on hearts, not stone.",args:["You are our letter — written on hearts, not tablets of stone","Not enough in ourselves; competence comes from God","The letter kills, the Spirit gives life","The old covenant faded; the new has surpassing and permanent glory","We are being transformed into his image with ever-increasing glory"],v:"He has made us competent as ministers of a new covenant — not of the letter but of the Spirit (3:6)"},
+      {n:4,t:"Treasure in jars of clay",s:"Paul refuses to distort the gospel. The power belongs to God, not the messenger. Outer self wasting away; inner self renewed.",args:["No deception or distortion — we commend ourselves by truth","The god of this age blinds minds of unbelievers","We are jars of clay — so the power is clearly God's, not ours","Hard pressed but not crushed; struck down but not destroyed","Fix eyes on unseen and eternal, not seen and temporary"],v:"We have this treasure in jars of clay to show that this all-surpassing power is from God (4:7)"},
+      {n:5,t:"Eternal dwelling & reconciliation",s:"The earthly tent destroyed; we have an eternal building. We live by faith. We are ambassadors of reconciliation.",args:["We groan in this tent, longing for the heavenly dwelling","Whether at home in body or away, we aim to please him","We live by faith, not by sight","The love of Christ compels us — he died so we might live for him","God reconciled us through Christ — he who knew no sin became sin for us"],v:"God was reconciling the world to himself in Christ, not counting people's sins against them (5:19)"},
+      {n:6,t:"Hardships of ministry & separation",s:"Don't receive God's grace in vain. Paul commends himself through sufferings. The church must not be yoked with unbelievers.",args:["Now is the day of salvation — don't receive grace in vain","Commending ministry through endurance, purity, and the Holy Spirit","Paradoxes of ministry: dying yet alive; poor yet making many rich","Do not be yoked with unbelievers — what fellowship does light have with darkness?","We are the temple of the living God"],v:"I tell you, now is the time of God's favor, now is the day of salvation (6:2)"},
+      {n:7,t:"Godly sorrow & Titus's report",s:"Paul rejoices at their repentance. Godly sorrow leads to salvation; worldly sorrow leads to death.",args:["Cleanse ourselves from all defilement — pursue holiness","Paul's distress before Titus arrived","Titus's report: their longing for Paul, their repentance","Godly sorrow produces repentance without regret; worldly sorrow = death"],v:"Godly sorrow brings repentance that leads to salvation and leaves no regret (7:10)"},
+      {n:8,t:"The collection: giving theology",s:"Macedonia's generosity despite poverty is the model. Titus sent to complete the collection. Giving flows from grace.",args:["Macedonia gave beyond their ability out of overflowing joy","They gave themselves first to the Lord","Christ became poor so we might become rich","Finish the collection — excel in the grace of giving"],v:"For you know the grace of our Lord Jesus Christ, that though he was rich, yet for your sake he became poor (8:9)"},
+      {n:9,t:"Cheerful giving & God's provision",s:"Generous giving is like sowing seed. God loves a cheerful giver and will provide everything needed to abound in every good work.",args:["He who sows sparingly will reap sparingly — and vice versa","Each should give what they decided in their heart — not reluctantly","God loves a cheerful giver — he will make all grace abound","Thanks be to God for his indescribable gift!"],v:"God loves a cheerful giver (9:7)"},
+      {n:10,t:"Paul's defense against accusations",s:"Paul is accused of being bold in letters but weak in person. He defends his God-given authority and fights with divine weapons.",args:["We fight with divine weapons that demolish strongholds","Take every thought captive to obey Christ","Paul's authority is for building up, not tearing down","Boast in the Lord, not yourself — commendation comes from God"],v:"We demolish arguments and every pretension that sets itself up against the knowledge of God (10:5)"},
+      {n:11,t:"Paul's boasting in weakness",s:"Paul reluctantly enters foolish boasting to defend against super-apostles. His suffering list surpasses all credentials.",args:["False apostles masquerade as apostles of Christ — Satan as angel of light","Paul worked without pay — to protect his integrity","Catalog of sufferings: shipwrecks, beatings, dangers, sleeplessness","Daily pressure: concern for all the churches"],v:"And no wonder, for Satan himself masquerades as an angel of light (11:14)"},
+      {n:12,t:"The thorn & sufficient grace",s:"Paul was caught up to paradise. But given a thorn to keep him humble. God's power is perfected in weakness.",args:["Visions of paradise — heard inexpressible things","A thorn given to keep Paul from conceit — asked three times for removal","'My grace is sufficient; my power is perfected in weakness'","Paul boasts in weaknesses so Christ's power rests on him"],v:"My grace is sufficient for you, for my power is made perfect in weakness (12:9)"},
+      {n:13,t:"Final warning & benediction",s:"Third visit coming — Paul warns those in sin. Test yourselves. The Trinitarian benediction closes the letter.",args:["Every matter established by two or three witnesses","Paul warns: if I come again I will not spare those who sinned","Test yourselves — examine whether Christ is in you","Aim for restoration, comfort, unity, peace","The grace, love, and fellowship of the Trinity be with you"],v:"May the grace of the Lord Jesus Christ, and the love of God, and the fellowship of the Holy Spirit be with you all (13:14)"},
+    ]
+  },
+  {
+    id:"gal", name:"Galatians",
+    meta:"Churches in Galatia · The gospel of grace alone vs. works of the law — no other gospel",
+    chapters:[
+      {n:1,t:"One gospel — no other",s:"Paul is astonished: the Galatians are deserting the gospel. Anyone who preaches another is accursed. Paul's gospel came by revelation.",args:["No other gospel — those who preach another are accursed (anathema)","Paul is not seeking human approval — a servant of Christ","His gospel came by revelation of Jesus Christ, not from humans","His former life: persecutor, zealot — then God revealed his Son"],v:"But even if we or an angel from heaven should preach a gospel other than the one we preached… let them be under God's curse! (1:8)"},
+      {n:2,t:"Jerusalem, Antioch & justification",s:"Jerusalem leaders added nothing to Paul's gospel. At Antioch, Paul opposed Peter to his face for hypocrisy. Justification is by faith alone.",args:["Jerusalem pillars gave Paul the right hand of fellowship","Peter's hypocrisy: withdrew from Gentiles under pressure from James's men","Paul's rebuke: Peter's behavior compels Gentiles to follow Jewish customs","We know a person is not justified by works of the law","I have been crucified with Christ — no longer I who live, but Christ"],v:"I have been crucified with Christ and I no longer live, but Christ lives in me (2:20)"},
+      {n:3,t:"Faith vs. law: Abraham's example",s:"Did you receive the Spirit by works of the law or by believing? Abraham believed God — faith has always been the path. The law is a guardian until Christ.",args:["You received the Spirit by faith, not law","Abraham believed God — credited as righteousness","All who rely on works of the law are under a curse","Christ redeemed us from the curse by becoming a curse for us","The law was our guardian until Christ; now we are sons through faith"],v:"The righteous will live by faith (3:11)"},
+      {n:4,t:"Heirs, not slaves — two covenants",s:"Before faith came we were enslaved. But God sent his Son to redeem us — we are sons and heirs. Hagar/Sarah represent two covenants: slavery vs. freedom.",args:["Heirs during childhood are no different from slaves — under guardians","When the fullness of time came, God sent his Son — adoption as sons","'Abba, Father' — the Spirit of his Son cries out in us","Hagar = Sinai/slavery; Sarah = Jerusalem above/freedom","Cast out the slave woman — we are children of the free woman"],v:"God sent his Son, born of a woman, born under the law, to redeem those under the law (4:4)"},
+      {n:5,t:"Freedom, Spirit vs. flesh",s:"Stand firm in freedom — do not submit to the yoke of slavery again. The Spirit and flesh are at war. Walk by the Spirit.",args:["If circumcised, Christ is of no value to you","The whole law summed up: 'Love your neighbor as yourself'","The Spirit and flesh desire what is contrary to each other","Works of the flesh vs. fruit of the Spirit","Those who belong to Christ crucified the flesh with its passions"],v:"For freedom Christ has set us free. Stand firm, then, and do not let yourselves be burdened again by a yoke of slavery (5:1)"},
+      {n:6,t:"Bearing burdens & the new creation",s:"Restore the fallen gently. Carry one another's burdens. Don't grow weary. Boast only in the cross. What matters is the new creation.",args:["Restore the sinner gently — watch yourself","Carry each other's burdens — fulfill the law of Christ","God is not mocked; you reap what you sow","Do not grow weary of doing good; in due season we will reap","Neither circumcision nor uncircumcision — new creation"],v:"May I never boast except in the cross of our Lord Jesus Christ (6:14)"},
+    ]
+  },
+  {
+    id:"eph", name:"Ephesians",
+    meta:"Ephesus and region · God's plan to unite all things in Christ through the church",
+    chapters:[
+      {n:1,t:"Every spiritual blessing & God's eternal plan",s:"Doxological opening: God blessed us with every spiritual blessing. Election, predestination, redemption, sealing by the Spirit — all to the praise of his glory.",args:["Chosen before the foundation of the world to be holy","Predestined for adoption — the riches of his grace lavished on us","Redemption through his blood — forgiveness of sins","Mystery revealed: to unite all things in Christ","Sealed with the Holy Spirit — the guarantee of our inheritance","Prayer: spirit of wisdom, knowing the hope of your calling"],v:"Praise be to the God and Father of our Lord Jesus Christ, who has blessed us… with every spiritual blessing in Christ (1:3)"},
+      {n:2,t:"Grace, not works — one new humanity",s:"Dead in trespasses, made alive by grace through faith — not works, so no one can boast. Gentiles were far off but brought near. Christ made two into one.",args:["Dead in trespasses — following the world, the flesh, the devil","By grace saved through faith — not of yourselves, not of works","God's workmanship, created for good works","Gentiles: once far off, now brought near by Christ's blood","He destroyed the dividing wall — one new humanity out of two","Built together as a dwelling of God in the Spirit"],v:"For it is by grace you have been saved, through faith — and this is not from yourselves, it is the gift of God (2:8)"},
+      {n:3,t:"The mystery of the church & Paul's prayer",s:"The mystery hidden for ages: Gentiles are fellow heirs. The church makes known God's wisdom to rulers in the heavenly places.",args:["The mystery: Gentiles are heirs together, members together, sharers together","Paul, least of all saints, entrusted with this grace","The church makes known the manifold wisdom of God to spiritual rulers","Prayer: rooted and established in love; know the surpassing love of Christ","To him able to do more than we ask or imagine — all glory"],v:"I pray that you… may have power to grasp how wide and long and high and deep is the love of Christ (3:18)"},
+      {n:4,t:"Unity of the body & the new self",s:"Walk worthy of your calling — unity in the body. Christ gave gifts for building up. Put off the old self, put on the new.",args:["One body, Spirit, hope, Lord, faith, baptism, God — seven unities","Gifts given for equipping the saints for ministry","Speak truth in love — grow up in every way into Christ","Put off old self; be renewed in your mind; put on the new self","Do not grieve the Holy Spirit"],v:"Speaking the truth in love, we will grow to become in every respect the mature body of him who is the head, that is, Christ (4:15)"},
+      {n:5,t:"Imitators of God & household code",s:"Walk in love, light, and wisdom. Avoid immorality and coarse talk. The Spirit-filled life overflows in thanksgiving and mutual submission.",args:["Imitate God — walk in love as Christ loved and gave himself","Walk as children of light — expose works of darkness","Make the most of every opportunity — understand the Lord's will","Be filled with the Spirit — sing, give thanks, submit to one another","Wives and husbands: the church/Christ model of sacrificial love"],v:"Be very careful, then, how you live — not as unwise but as wise (5:15)"},
+      {n:6,t:"Household code & armor of God",s:"Children obey parents. Slaves and masters. Then: stand against the devil's schemes with the full armor of God. Pray in the Spirit always.",args:["Children obey parents; fathers don't exasperate","Servants and masters: serve as to Christ","Our struggle is not against flesh and blood but against spiritual forces","Armor of God: truth, righteousness, gospel, faith, salvation, Word, prayer"],v:"For our struggle is not against flesh and blood, but against the rulers, against the authorities… against the spiritual forces of evil in the heavenly realms (6:12)"},
+    ]
+  },
+  {
+    id:"phil", name:"Philippians",
+    meta:"The church at Philippi · Joy in Christ is possible in any circumstance",
+    chapters:[
+      {n:1,t:"Partnership in the gospel & to live is Christ",s:"Joy from prison. Paul's imprisonment advanced the gospel. To live is Christ, to die is gain. He urges them to conduct themselves worthy of the gospel.",args:["Confidence that God who began a good work will complete it","Paul's imprisonment spread the gospel — even the praetorian guard heard","'For me to live is Christ and to die is gain'","Conduct worthy of the gospel — stand firm, not frightened by opponents"],v:"For to me, to live is Christ and to die is gain (1:21)"},
+      {n:2,t:"Humility: the Christ hymn",s:"Have the same mindset as Christ who humbled himself to death on a cross and was exalted. Work out your salvation — God is at work in you.",args:["Do nothing out of selfish ambition — consider others better than yourselves","The Kenosis hymn: Christ equal with God, took servant form, died on cross","God highly exalted him — every knee will bow at Jesus's name","Work out your salvation with fear and trembling — God works in you","Shine as lights in a crooked generation"],v:"He humbled himself by becoming obedient to death — even death on a cross! (2:8)"},
+      {n:3,t:"All loss for Christ & pressing on",s:"Paul warns against the circumcision party. He lists his impressive Jewish credentials — then counts them all as garbage compared to knowing Christ.",args:["Watch out for those who mutilate the flesh (Judaizers)","Paul's credentials: circumcised, Hebrew of Hebrews, Pharisee, blameless","All of that is garbage compared to knowing Christ","Righteousness from God through faith, not my own law-righteousness","Pressing on toward the goal — heavenly prize"],v:"I consider everything a loss because of the surpassing worth of knowing Christ Jesus my Lord (3:8)"},
+      {n:4,t:"Peace, contentment & rejoicing",s:"Rejoice always. Do not be anxious. The peace of God guards hearts. Think on what is true and noble. Paul learned the secret of contentment.",args:["Rejoice in the Lord always — again: Rejoice!","Do not be anxious — present requests to God with thanksgiving","The peace of God will guard your hearts and minds in Christ","Think on whatever is true, noble, right, pure, lovely, admirable","I have learned to be content in all circumstances","I can do all things through Christ who strengthens me"],v:"I have learned the secret of being content in any and every situation (4:11)"},
+    ]
+  },
+  {
+    id:"col", name:"Colossians",
+    meta:"The church at Colossae · Christ is supreme over all creation — don't add to him",
+    chapters:[
+      {n:1,t:"Christ as cosmic Lord",s:"Prayer for knowledge and love. The Christ hymn: firstborn over all creation, head of the church, the one in whom all things hold together.",args:["Prayer: filled with knowledge of his will, fruitfulness, strength, thankfulness","Christ is the image of the invisible God — firstborn over all creation","All things created through him and for him — he holds all things together","He is the head of the church; firstborn from the dead","Reconciling all things through the blood of his cross"],v:"He is before all things, and in him all things hold together (1:17)"},
+      {n:2,t:"Fullness in Christ: against philosophy & ritual",s:"All wisdom and knowledge is hidden in Christ. Don't be taken captive by human philosophy. The heresy adds regulations and angels — but Christ is the head.",args:["All treasures of wisdom and knowledge hidden in Christ","See to it no one takes you captive through hollow and deceptive philosophy","In Christ the fullness of deity dwells bodily — you have been given fullness","Buried with him in baptism, raised by faith","Human rules: don't touch, don't taste — not Christ"],v:"For in Christ all the fullness of the Deity lives in bodily form (2:9)"},
+      {n:3,t:"New life from above & household code",s:"Set your minds on things above. Put to death earthly nature. Put on the new self. The peace of Christ should rule your hearts.",args:["Set your mind on things above where Christ is seated","Put to death: sexual immorality, impurity, greed, anger, slander","Put on: compassion, kindness, humility, gentleness, patience","Let the word of Christ dwell richly — teach and admonish one another","Household code in light of the Lord"],v:"Set your minds on things above, not on earthly things (3:2)"},
+      {n:4,t:"Prayer, conduct & greetings",s:"Pray with thanksgiving. Be wise toward outsiders. Let speech be seasoned with salt. Greetings from Mark and Luke.",args:["Devote yourselves to prayer with thanksgiving","Pray for open doors for the word","Be wise toward outsiders — make the most of every opportunity","Conversation gracious, seasoned with salt — know how to answer everyone"],v:"Let your conversation be always full of grace, seasoned with salt, so that you may know how to answer everyone (4:6)"},
+    ]
+  },
+  {
+    id:"1thess", name:"1 Thessalonians",
+    meta:"New believers at Thessalonica · Hold on to the gospel; prepare for Christ's return",
+    chapters:[
+      {n:1,t:"The exemplary church",s:"Their faith, love, and hope are known everywhere. They turned from idols to God, and now others report their transformation.",args:["Their work of faith, labor of love, endurance of hope are known everywhere","Gospel came not in word only but in power, Holy Spirit, conviction","They turned from idols to God — to wait for his Son from heaven"],v:"You became a model to all the believers in Macedonia and Achaia (1:7)"},
+      {n:2,t:"Paul's genuine ministry",s:"Paul defends his motives. He did not flatter or seek glory. He was gentle like a nursing mother and urgent like a father.",args:["Paul's ministry: no flattery, no greed — shared his very self","Gentle as a nursing mother; urgent as a father","They received Paul's message as God's word, not a human word","They suffered as the churches in Judea did"],v:"You accepted it not as a human word, but as it actually is, the word of God (2:13)"},
+      {n:3,t:"Timothy's report & Paul's joy",s:"Paul sent Timothy fearing persecution shook their faith. Timothy returns with good news. Paul prays their love will overflow.",args:["Sent Timothy to strengthen and encourage amid persecution","Feared the tempter got to them — Paul's labor would be wasted","Timothy returns with good news of their faith and love — Paul revived","Prayer: love increase, hearts established blameless at Christ's coming"],v:"Now we really live, since you are standing firm in the Lord (3:8)"},
+      {n:4,t:"Holy living & the dead in Christ",s:"Instruction on sexual holiness and brotherly love. The dead will be raised first. Then we who are alive will be caught up to meet the Lord.",args:["Avoid sexual immorality — sanctification is God's will","Love one another increasingly; live quietly and work","Those who fell asleep: God will bring them with Jesus","The dead will rise first — we who are alive will be caught up together","We will be with the Lord forever — encourage one another"],v:"For the Lord himself will come down from heaven… and the dead in Christ will rise first (4:16)"},
+      {n:5,t:"Day of the Lord & community life",s:"The Day of the Lord comes as a thief. Be sons of the light. Community instructions: warn the idle, encourage the fainthearted, rejoice always, pray without ceasing.",args:["Day of the Lord: sudden destruction — but we are not in darkness","Sons of the light — be sober, wearing faith, love, hope as armor","Encourage and build each other up","Rejoice always, pray continually, give thanks in all circumstances","Test everything; hold fast to what is good"],v:"Rejoice always, pray continually, give thanks in all circumstances (5:16-18)"},
+    ]
+  },
+  {
+    id:"2thess", name:"2 Thessalonians",
+    meta:"Thessalonica · The Day of the Lord hasn't come yet; be patient and work while you wait",
+    chapters:[
+      {n:1,t:"Just judgment & relief at his coming",s:"Their faith and love are growing amid persecution. God will repay trouble to persecutors. Christ will punish those who reject the gospel.",args:["Their faith is growing and love is increasing despite persecution","God's righteous judgment: rest for the persecuted, trouble for persecutors","Christ will come with flaming fire — punishing those who reject the gospel","Eternal destruction: shut out from his presence","Paul prays they are worthy of his calling"],v:"God is just: He will pay back trouble to those who trouble you (1:6)"},
+      {n:2,t:"The man of lawlessness",s:"The Day of the Lord hasn't come. A great apostasy must come first, and the man of lawlessness must be revealed. Someone is restraining him now.",args:["Don't be alarmed — certain things come first","The apostasy/rebellion must come first","The man of lawlessness will be revealed — exalting himself over all called God","Something/someone is restraining him now","The Lord will overthrow him with the breath of his mouth","The lawless one comes by Satan's power with counterfeit miracles"],v:"For the secret power of lawlessness is already at work (2:7)"},
+      {n:3,t:"Prayer, idle members & work",s:"Pray for the word to spread. Keep away from any brother who is idle. The rule: if anyone will not work, they shall not eat.",args:["Pray the word spreads rapidly and the Lord delivers from evil people","The Lord is faithful — he will strengthen and protect","Keep away from idle brothers who don't follow apostolic tradition","Those unwilling to work should not eat","Do not grow weary of doing good"],v:"The one who is unwilling to work shall not eat (3:10)"},
+    ]
+  },
+  {
+    id:"1tim", name:"1 Timothy",
+    meta:"Timothy in Ephesus · How to conduct oneself in the household of God",
+    chapters:[
+      {n:1,t:"False teachers & the gospel",s:"Stop the false teachers promoting myths and genealogies. The law is good if used lawfully. Paul gives thanks that Christ saved him — the worst of sinners.",args:["Charge certain people not to teach strange doctrines","The law is for the lawless — not for the righteous person","Paul was the worst sinner — yet shown mercy as an example","The goal of instruction is love from a pure heart"],v:"Christ Jesus came into the world to save sinners — of whom I am the worst (1:15)"},
+      {n:2,t:"Prayer & roles in worship",s:"Pray for all people, including rulers. God desires all to be saved. Christ is the one mediator. Instructions on men and women in worship.",args:["Pray for all — kings and those in authority — so we may live peacefully","God desires all to be saved — one God, one mediator (Christ Jesus)","Men should pray without anger or quarreling","Women: modesty; not to teach or have authority over a man"],v:"For there is one God and one mediator between God and mankind, the man Christ Jesus (2:5)"},
+      {n:3,t:"Qualifications for overseers & deacons",s:"Overseers must be above reproach, faithful, temperate, able to teach. Deacons also held to high character. The church is the pillar and foundation of truth.",args:["Overseer: one wife, sober-minded, self-controlled, able to teach, not a drunkard","Not a recent convert — may become conceited and fall under the devil's judgment","Deacons: dignified, not double-tongued, not greedy","The church: pillar and buttress of truth"],v:"The church of the living God [is] the pillar and foundation of the truth (3:15)"},
+      {n:4,t:"False asceticism & Timothy's example",s:"Some will depart from the faith, following demonic teachings about abstaining from food and marriage. Timothy must train himself in godliness.",args:["Deceiving spirits and teachings of demons: forbidding marriage, abstinence from food","Everything created by God is good — received with thanksgiving","Train yourself for godliness — it has value for the present and future life","Set an example in speech, conduct, love, faith, purity"],v:"Train yourself to be godly (4:7)"},
+      {n:5,t:"Widows, elders & honor",s:"Instructions on treating various groups. Qualifications for the widows list. Double honor for elders who lead well.",args:["Real widows are desolate and trusting in God — family must care for relatives first","Younger widows: encourage to marry, bear children, manage homes","Elders who lead well deserve double honor — worker deserves wages","Don't be hasty in laying on hands; keep yourself pure"],v:"The elders who direct the affairs of the church well are worthy of double honor (5:17)"},
+      {n:6,t:"Godliness with contentment & final charge",s:"Godliness with contentment is great gain. Love of money is a root of all kinds of evil. Flee these things and pursue righteousness. Guard what has been entrusted.",args:["Godliness with contentment is great gain — brought nothing in, take nothing out","Those who want to get rich fall into temptation and a trap","Love of money is a root of all kinds of evil","Flee these things; pursue righteousness, godliness, faith, love, endurance","Guard what has been entrusted — avoid godless chatter and false knowledge"],v:"Godliness with contentment is great gain (6:6)"},
+    ]
+  },
+  {
+    id:"2tim", name:"2 Timothy",
+    meta:"Timothy — Paul's final letter from death row · Be unashamed; guard the deposit; preach the word",
+    chapters:[
+      {n:1,t:"Fan the flame & don't be ashamed",s:"Fan into flame the gift of God. Do not be ashamed of testimony about Jesus or of Paul in prison. Guard the good deposit.",args:["Fan into flame the gift of God — spirit of power, love, self-control","Do not be ashamed of testimony about our Lord or of Paul the prisoner","God saved and called us by his grace and purpose — not because of works","Guard the good deposit with the help of the Holy Spirit"],v:"For the Spirit God gave us does not make us timid, but gives us power, love and self-discipline (1:7)"},
+      {n:2,t:"The soldier, athlete & worker",s:"Be strong in grace. Endure hardship like a soldier. Handle the word correctly. Flee youthful passions.",args:["Entrust the teaching to faithful people who will teach others (4 generations)","Endure hardship as a good soldier of Christ Jesus","Metaphors: soldier, athlete, farmer — all requiring discipline","The Lord knows those who are his — depart from iniquity","Flee youthful passions; pursue righteousness, faith, love, peace"],v:"Do your best to present yourself to God as one approved, a worker who does not need to be ashamed and who correctly handles the word of truth (2:15)"},
+      {n:3,t:"Last days & Scripture's sufficiency",s:"Terrible times will come — men will be lovers of self and money. All Scripture is breathed out by God and profitable for every good work.",args:["In the last days: self-love, money-love, arrogance, ingratitude, no self-control","Avoid such people — they have the form of godliness but deny its power","All Scripture is breathed out by God — profitable for teaching, reproof, correction, training","The man of God may be thoroughly equipped for every good work"],v:"All Scripture is God-breathed and is useful for teaching, rebuking, correcting and training in righteousness (3:16)"},
+      {n:4,t:"Preach the word & farewell",s:"Preach the word in season and out of season. People will have itching ears. Paul has fought the good fight. Come quickly — only Luke is with him.",args:["Preach the word; be ready in season and out — reprove, rebuke, exhort","People will have itching ears — turn to myths; keep your head, endure","'I have fought the good fight, finished the race, kept the faith'","Only Luke is with me — bring Mark; bring my cloak and scrolls","The Lord stood by me and gave me strength to proclaim the gospel"],v:"I have fought the good fight, I have finished the race, I have kept the faith (4:7)"},
+    ]
+  },
+  {
+    id:"titus", name:"Titus",
+    meta:"Titus in Crete · Sound doctrine produces godly lives",
+    chapters:[
+      {n:1,t:"Elder qualifications & Cretan false teachers",s:"Appoint elders who are blameless and hold firm to the faith. Crete is full of false teachers — they claim to know God but deny him by their works.",args:["Elders: blameless, one wife, children who believe, hospitable, self-controlled","Overseer must hold firm to the trustworthy word as taught","Many are insubordinate — teaching for shameful gain; must be silenced","Cretans are liars, evil beasts, lazy gluttons — rebuke them sharply","They claim to know God but deny him by their works"],v:"He must hold firmly to the trustworthy message as it has been taught (1:9)"},
+      {n:2,t:"Sound doctrine for all groups",s:"Older men, women, young women, young men, and slaves — all receive specific instruction. Grace teaches us to say no to ungodliness.",args:["Older men: temperate, dignified, sound in faith, love, endurance","Older women: reverent, not slanderers, train young women","Young women: love husbands and children, self-controlled, workers at home","Young men: self-controlled — Titus as an example","Grace appeared — it trains us to say no to ungodliness and worldly passions"],v:"For the grace of God has appeared that offers salvation to all people. It teaches us to say 'No' to ungodliness (2:11-12)"},
+      {n:3,t:"Good works, kindness & avoiding disputes",s:"Be subject to rulers. Before Christ we were foolish. But God saved us by his mercy through the washing of regeneration and renewing of the Holy Spirit.",args:["Be subject to rulers and authorities; be ready for every good work","Before we were foolish, disobedient, enslaved to passions","God saved us by his mercy — washing of regeneration and renewing of the Holy Spirit","Justified by his grace, heirs of eternal life","Avoid foolish controversies, genealogies, and quarrels about the law","Warn a divisive person twice, then have nothing to do with them"],v:"He saved us, not because of righteous things we had done, but because of his mercy (3:5)"},
+    ]
+  },
+  {
+    id:"phlm", name:"Philemon",
+    meta:"A single letter to Philemon · Paul intercedes for the runaway slave Onesimus",
+    chapters:[
+      {n:1,t:"Intercession for Onesimus",s:"Paul writes from prison. Philemon praised for his love. Onesimus, once useless, is now useful. Paul sends him back asking Philemon to receive him as a brother, not a slave. Paul will cover any debt.",args:["Paul praises Philemon's love and faith toward all the saints","Onesimus was formerly useless but is now useful to both Paul and Philemon","Paul sends him back — his heart goes with him","'Receive him as you would receive me' — as a dear brother","If he owes anything, charge it to Paul's account","Paul has confidence Philemon will do even more than he asks"],v:"Perhaps the reason he was separated from you for a little while was that you might have him back forever — no longer as a slave, but better than a slave, as a dear brother (v.15-16)"},
+    ]
+  },
+];
+
+const MATTHEW = [
+  {
+    id:"m1", name:"Birth & Prep (1–4)",
+    meta:"The King arrives — identity established through genealogy, fulfillment, and testing",
+    chapters:[
+      {n:1,t:"Genealogy & Virgin Birth",badge:"ot",s:"Matthew opens with a genealogy tracing Jesus from Abraham through David to Joseph. The structure (3×14 generations) signals deliberate literary artistry. The virgin birth fulfills Isaiah 7:14.",args:["Genealogy establishes Jesus as son of Abraham (covenant heir) and son of David (royal heir)","Three sets of 14 generations — David's name in Hebrew gematria = 14","Joseph is legally (not biologically) Jesus's father, preserving the Davidic line","The angel names him Jesus ('YHWH saves') — he will save his people from their sins","Unusual women in the genealogy (Tamar, Rahab, Ruth) signal Gentile inclusion and grace"],ot:"Isa 7:14 ('a virgin will conceive') — Matthew applies 'almah' via LXX 'parthenos' directly to Mary's conception",v:"She will give birth to a son, and you are to give him the name Jesus, because he will save his people from their sins (1:21)"},
+      {n:2,t:"Magi, Flight to Egypt & Massacre",badge:"ot",s:"Magi from the east arrive, provoking Herod. The family flees to Egypt, returns after Herod's death, and settles in Nazareth. Every move fulfills Scripture.",args:["Magi represent Gentile recognition of Israel's King — international scope from the start","Herod parallels Pharaoh — a ruler who slaughters infant males to protect his power","The flight to Egypt and return enacts a new Exodus typology","Rachel weeping (Ramah) connects the massacre to the original exile trauma"],ot:"Mic 5:2 (Bethlehem); Hos 11:1 ('Out of Egypt I called my son' — Israel's story fulfilled in the Son); Jer 31:15 (Rachel weeping)",v:"Out of Egypt I called my son (2:15)"},
+      {n:3,t:"John the Baptist & Jesus's Baptism",badge:"ot",s:"John fulfills the Elijah/voice-in-the-wilderness role. He announces one greater coming. Jesus is baptized — the Spirit descends and the Father speaks.",args:["John's camel-hair garment and leather belt echo 2 Kings 1:8 — deliberate Elijah typology","John's message: the kingdom of heaven is at hand; repent","John rebukes the Pharisees: 'brood of vipers' — the axe is at the root","Jesus's baptism: 'to fulfill all righteousness' — identification with Israel","Spirit descends as a dove; the Father speaks Ps 2:7 + Isa 42:1 — royal Son + Servant"],ot:"Isa 40:3 (voice in the wilderness); Mal 3:1; Ps 2:7; Isa 42:1 — combined at the baptism",v:"This is my Son, whom I love; with him I am well pleased (3:17)"},
+      {n:4,t:"Temptation & Beginning of Ministry",badge:"narr",s:"Jesus is led into the wilderness for 40 days — recapitulating Israel's 40 years. He answers every temptation with Deuteronomy. He begins his Galilean ministry and calls his first disciples.",args:["40 days/40 years — Jesus as the true Israel succeeding where Israel failed","Each temptation answered with Deuteronomy (8:3; 6:16; 6:13) — the law Israel failed to keep","Satan's offer of the kingdoms is a shortcut around the cross — Jesus refuses","Settling in Capernaum fulfills Isa 9:1-2 — light in Galilee of the Gentiles","'Follow me and I will make you fishers of men' — calling Peter, Andrew, James, John"],ot:"Deut 8:3; 6:16; 6:13 (Jesus's responses); Isa 9:1-2 (Galilee of the Gentiles)",v:"Man shall not live on bread alone, but on every word that comes from the mouth of God (4:4)"},
+    ]
+  },
+  {
+    id:"m2", name:"Sermon on the Mount (5–7)",
+    meta:"Discourse 1 — The ethics of the kingdom: Jesus as the new Moses giving a new Torah",
+    chapters:[
+      {n:5,t:"Beatitudes, Law & Antitheses",badge:"disc",s:"Jesus ascends the mountain (new Sinai) and delivers the kingdom's charter. The Beatitudes describe kingdom citizens. The antitheses ('You have heard… but I say') show Jesus fulfilling and deepening the law.",args:["Beatitudes: kingdom belongs to the poor in spirit, the mourning, the meek — a reversal of worldly values","You are salt and light — the disciples' public witness","Jesus came not to abolish the law but to fulfill it — not one jot will pass","Six antitheses: murder → anger; adultery → lust; divorce; oaths; retaliation; enemy-love","The demand is internalized righteousness, not merely external compliance","Love your enemies — be perfect as your heavenly Father is perfect"],ot:"Exodus 19–20 (Sinai) — mountain location is deliberate; the antitheses reapply Exod 20/Lev/Deut",v:"Do not think that I have come to abolish the Law or the Prophets; I have not come to abolish them but to fulfill them (5:17)"},
+      {n:6,t:"Religious Practice & Kingdom Priority",badge:"disc",s:"Almsgiving, prayer, and fasting must be done for God's eyes, not human applause. The Lord's Prayer models kingdom petition. Seek first the kingdom.",args:["Three practices (almsgiving, prayer, fasting) — done in secret, not for show","The Lord's Prayer: kingdom come, will be done, daily bread, forgiveness, deliverance","Forgiveness is linked — if you don't forgive, neither will your Father","You cannot serve both God and money (mammon)","Seek first his kingdom and righteousness — all other things will be added"],ot:"Echoes of Ps 23 (daily provision); kingdom language draws on Daniel's Son of Man vision",v:"But seek first his kingdom and his righteousness, and all these things will be given to you as well (6:33)"},
+      {n:7,t:"Judging, Asking & Two Ways",badge:"disc",s:"Don't judge hypocritically — remove the plank first. Ask, seek, knock. The golden rule. Two gates, two trees, two builders. Only those who do the Father's will enter the kingdom.",args:["Judge not — means hypocritical judgment, not all discernment (v.6: don't cast pearls before pigs)","Ask, seek, knock — the Father gives good gifts to those who ask","The golden rule: do to others what you would have them do to you","Narrow vs. broad gate — few find the narrow way","False prophets: you will know them by their fruits","Not 'Lord, Lord' but doing the Father's will — not all who prophecy in his name are known by him","Two builders: hearing and doing vs. hearing only — the storm reveals the foundation"],ot:"Prov 8 (wisdom's call); Deut 30:15-20 (two ways — life and death)",v:"Everyone who hears these words of mine and puts them into practice is like a wise man who built his house on the rock (7:24)"},
+    ]
+  },
+  {
+    id:"m3", name:"Authority & Mission (8–10)",
+    meta:"Narrative + Discourse 2 — The King's power demonstrated; the Twelve sent out",
+    chapters:[
+      {n:8,t:"Miracles of the King",badge:"narr",s:"A cluster of miracles follows the Sermon. Leper cleansed, centurion's servant healed, storm stilled, demoniacs in Gadara. The cost of following Jesus is introduced.",args:["Leper: 'I am willing — be clean' — Jesus touches the untouchable","Centurion's faith surpasses anything in Israel — a Gentile model","'Many will come from east and west' to sit with Abraham — Gentile inclusion foreshadowed","Healing fulfills Isa 53:4 — he took up our infirmities","Stilling the storm: 'What kind of man is this?' — sovereign over creation","Gadarene demoniacs cast into pigs — Gentile territory signals mission scope"],ot:"Isa 53:4 (he took up our infirmities) — cited explicitly in 8:17",v:"He took up our infirmities and bore our diseases (8:17)"},
+      {n:9,t:"Forgiveness, Calling & Kingdom Power",badge:"narr",s:"The paralytic's sins are forgiven first — provoking scribal opposition. Tax collectors and sinners are called. Jairus's daughter raised. The harvest is plentiful.",args:["Paralytic: 'Your sins are forgiven' — authority to forgive and heal proves both","Calling Matthew the tax collector — the lowest social outcast becomes a disciple","'I desire mercy, not sacrifice' (Hos 6:6) — Jesus eating with sinners explained","New wine/new wineskins — the new covenant cannot be contained by the old","Plentiful harvest, few workers — pray for laborers; the mission is urgent"],ot:"Hos 6:6 (mercy not sacrifice) — cited twice in Matthew (9:13 and 12:7)",v:"I have not come to call the righteous, but sinners (9:13)"},
+      {n:10,t:"Discourse 2: Mission of the Twelve",badge:"disc",s:"Jesus sends out the Twelve with authority. Instructions: go to the lost sheep of Israel, expect rejection. Disciples will face persecution — confess me before men.",args:["Restricted to Israel for now — the nations will come in the next phase","Kingdom announcement, healing, and exorcism are the mission content","Shake the dust off your feet — judgment on those who reject","Sheep among wolves: wise as serpents, innocent as doves","The Spirit will speak through you when handed over","Not peace but a sword — family division will result from following Jesus","Whoever loses his life for my sake will find it"],ot:"Mic 7:6 (family division) — echoed in v.35-36",v:"Whoever acknowledges me before others, I will also acknowledge before my Father in heaven (10:32)"},
+    ]
+  },
+  {
+    id:"m4", name:"Opposition & Parables (11–13)",
+    meta:"Rising opposition leads to parabolic teaching — the mystery of the kingdom revealed and concealed",
+    chapters:[
+      {n:11,t:"John the Baptist & Israel's Rejection",badge:"narr",s:"John sends from prison asking if Jesus is the one. Jesus praises John as Elijah but notes the generation rejects both John and Jesus. The great invitation to the weary.",args:["Jesus answers John with Isaiah's restoration promises fulfilled in his deeds","John is Elijah — greatest born of women — yet least in the kingdom is greater","This generation rejects both the ascetic John and the festive Jesus","Woes on Chorazin, Bethsaida, Capernaum — greater condemnation than Tyre and Sodom","Hidden from the wise, revealed to little children — sovereign grace in disclosure","'Come to me, all who are weary' — the easy yoke vs. Pharisaic burden"],ot:"Isa 35:5-6; 61:1 (miracles described back to John); Mal 4:5 (Elijah typology)",v:"Come to me, all you who are weary and burdened, and I will give you rest (11:28)"},
+      {n:12,t:"Sabbath Controversies & Blasphemy Warning",badge:"narr",s:"Two Sabbath controversies. The Pharisees plot to kill Jesus. Beelzebul accusation. The unforgivable sin. Sign of Jonah. True family.",args:["'The Son of Man is lord of the Sabbath' — authority over Torah's institutions","'I desire mercy, not sacrifice' (Hos 6:6) — repeated to expose Pharisees","Jesus is the Servant who will not quarrel — quiet, persistent, victorious","Beelzebul controversy: a house divided cannot stand; binding the strong man","Blasphemy against the Holy Spirit: attributing the Spirit's work to Satan — unforgivable","Sign of Jonah: the only sign given — three days in the heart of the earth","True family: whoever does the will of my Father"],ot:"Isa 42:1-4 (Servant song cited fully in 12:18-21); Hos 6:6; Jonah 1:17",v:"A bruised reed he will not break, and a smoldering wick he will not snuff out (12:20)"},
+      {n:13,t:"Discourse 3: Parables of the Kingdom",badge:"disc",s:"Seven kingdom parables. Jesus teaches in parables to reveal truth to insiders and conceal it from those who have hardened — fulfilling Isaiah 6.",args:["Sower: four soils — only one produces fruit; the word lands differently depending on the heart","Why parables? To reveal to disciples, to conceal from those who hardened (Isa 6:9-10)","Weeds among wheat: don't pull them up; judgment will separate at the end","Mustard seed and leaven: the kingdom starts small and pervades everything","Hidden treasure and pearl: the kingdom is worth everything you have","Dragnet: end-time sorting — angels separate the wicked from the righteous","Rejected in Nazareth: a prophet without honor in his hometown"],ot:"Isa 6:9-10 (quoted in 13:14-15 — why parables conceal); Ps 78:2 (speaking in parables)",v:"Whoever has will be given more… Whoever does not have, even what they have will be taken from them (13:12)"},
+    ]
+  },
+  {
+    id:"m5", name:"The King's Community (14–18)",
+    meta:"Narrative + Discourse 4 — Jesus builds his community; Peter's confession; church order",
+    chapters:[
+      {n:14,t:"John Beheaded, Feeding 5000 & Water-Walking",badge:"narr",s:"Herod executes John. Jesus feeds 5,000 in a wilderness — a new Exodus meal. He walks on water. Peter sinks. They worship: 'Truly you are the Son of God.'",args:["John's death foreshadows Jesus's — rejected prophets both","Feeding 5,000: took bread, blessed, broke, gave — Eucharistic language; echoes Moses/manna","Jesus walking on water: 'It is I' (ego eimi) — the divine name over chaos","Peter's water-walking and sinking: faith falters under fear — Lord, save me!","Worship confession: 'Truly you are the Son of God' — climax of the sea narrative"],ot:"Exod 16 (manna in the wilderness); Job 9:8 (God treads on the waves); Ps 107:23-29",v:"Truly you are the Son of God (14:33)"},
+      {n:15,t:"Tradition, Defilement & Canaanite Faith",badge:"narr",s:"Pharisees attack Jesus for ignoring hand-washing tradition. True defilement is from the heart. A Canaanite woman's persistent faith wins Jesus's help — Gentile breakthrough.",args:["Corban rule: Pharisees allow avoiding parents' care by dedicating money to God","Isa 29:13: 'hearts are far from me' — teaching the commandments of men","Defilement comes from within — what comes out of the heart defiles","Canaanite woman: 'Even the dogs eat the crumbs' — persistence and humility praised","'Great is your faith!' — the only person Jesus says this to in Matthew","Feeding the 4,000 likely in Gentile territory — Gentile parallel to ch. 14"],ot:"Isa 29:13 (quoted in 15:8-9 — lips honor, hearts far)",v:"Woman, you have great faith! Your request is granted (15:28)"},
+      {n:16,t:"Peter's Confession; First Passion Prediction",badge:"narr",s:"Pharisees demand a sign — refused. Peter confesses Jesus as the Christ. Jesus promises to build his church. First passion prediction — Peter is rebuked as Satan.",args:["They cannot read the signs of the times — like the sky but not the moment","Peter's confession: 'You are the Messiah, the Son of the living God' — revealed by the Father","On this rock I will build my church — gates of Hades will not prevail","Keys of the kingdom: binding and loosing authority","First passion prediction: suffer, die, and on the third day rise","Peter = Satan: you do not have in mind the things of God but of men"],ot:"Isa 22:22 (keys of the kingdom imagery — key of David)",v:"You are the Messiah, the Son of the living God (16:16)"},
+      {n:17,t:"Transfiguration & Second Passion Prediction",badge:"narr",s:"Jesus is transfigured on a high mountain. Moses and Elijah appear. The Father speaks again. Jesus discusses Elijah/John. Second passion prediction. Temple tax paid.",args:["Transfiguration: the glory hidden in the incarnation momentarily unveiled","Moses (law) and Elijah (prophets) appear — confirming Jesus as their fulfillment","The voice repeats the baptism declaration — 'Listen to him' added (Deut 18:15)","Elijah has already come — John the Baptist — and was treated as they pleased","Second passion prediction — disciples are deeply grieved but don't understand"],ot:"Deut 18:15 (listen to him — the prophet like Moses); Mal 4:5 (Elijah must come first)",v:"This is my Son, whom I love; with him I am well pleased. Listen to him! (17:5)"},
+      {n:18,t:"Discourse 4: Life in the Community",badge:"disc",s:"Greatness in the kingdom = becoming like a child. Don't cause little ones to stumble. The lost sheep. Church discipline procedure. Forgiving 70×7. The unforgiving servant.",args:["Greatness = humility; whoever humbles himself like a child is greatest","Woe to those who cause little ones to stumble — millstone warning","The 99 and the 1: God's heart for the wandering little one","Church discipline: one-on-one, then two or three witnesses, then the church","Forgive 70 times 7 — unlimited forgiveness","Unforgiving servant: forgiven a massive debt, refuses to forgive a small one — handed over"],ot:"Deut 19:15 (two or three witnesses — church discipline procedure)",v:"For where two or three gather in my name, there am I with them (18:20)"},
+    ]
+  },
+  {
+    id:"m6", name:"Journey to Jerusalem (19–22)",
+    meta:"Narrative — The King advances on Jerusalem; conflict with the establishment escalates",
+    chapters:[
+      {n:19,t:"Divorce, Children & the Rich Young Man",badge:"narr",s:"Pharisees test Jesus on divorce. Jesus grounds marriage in creation — one flesh. Children welcomed. Rich young man: sell all, follow me. Impossible without God.",args:["Divorce: Pharisees cite Deut 24 (Moses); Jesus goes back to Gen 2 — creation intent","Hardness of heart is why Moses permitted it — Jesus tightens the standard","Children welcomed: the kingdom belongs to such as these","Rich young man: keeps all commandments; Jesus tests ultimate loyalty — goes away sad","How hard for a rich person to enter the kingdom — camel through the eye of a needle","With God all things are possible"],ot:"Gen 2:24 (one flesh — creation order); Deut 24:1-4 (the Mosaic divorce concession)",v:"What God has joined together, let no one separate (19:6)"},
+      {n:20,t:"Workers in the Vineyard; Third Passion Prediction; Service",badge:"narr",s:"Parable: latecomers receive the same wage as all-day workers. Third passion prediction (most detailed). James and John seek thrones. The greatest must be servant of all.",args:["Workers hired at all hours receive the same denarius — the owner can do what he wants with his own","'The last will be first and the first will be last' — kingdom economics inverts status","Third passion prediction: explicit — handed to Gentiles, mocked, flogged, crucified, raised","Mother of James and John asks for thrones — disciples still misunderstand the kingdom","The Son of Man came not to be served but to serve, and to give his life as a ransom for many","Blind men at Jericho: 'Son of David, have mercy on us'"],ot:"Isa 53:10-12 (ransom for many — the Servant gives his life as a guilt offering)",v:"The Son of Man did not come to be served, but to serve, and to give his life as a ransom for many (20:28)"},
+      {n:21,t:"Triumphal Entry, Temple Cleansing & Authority Challenged",badge:"narr",s:"Jesus enters Jerusalem on a donkey — the crowd shouts Hosanna. He cleanses the temple. The fig tree cursed. Chief priests challenge his authority.",args:["Donkey entry fulfills Zechariah 9:9 — the humble, peaceful king","The crowd cries Psalm 118:26 ('Blessed is he who comes in the name of the Lord')","Temple cleansing: 'house of prayer' (Isa 56:7) vs. 'den of robbers' (Jer 7:11)","Fig tree cursed: Israel's fruitlessness; faith moves mountains","Authority question silences them","Parable of wicked tenants: vineyard given to others who produce fruit"],ot:"Zech 9:9 (donkey entry); Ps 118:22-26 (stone rejected/Hosanna); Isa 5:1-7 (vineyard of Israel); Isa 56:7; Jer 7:11",v:"The stone the builders rejected has become the cornerstone (21:42)"},
+      {n:22,t:"Wedding Banquet & Controversy Questions",badge:"narr",s:"Parable of the wedding banquet — invited guests refuse; outsiders fill the hall. Then four controversy questions: taxes, resurrection, greatest commandment, David's Son.",args:["Wedding banquet: Israel refuses the invitation; outsiders fill the hall; the kingdom demands appropriate response","Taxes: 'Give to Caesar what is Caesar's, and to God what is God's'","Resurrection: the Sadducees are wrong about both Scripture and God's power","Greatest commandment: love God with all, love neighbor — all the law hangs on these two","David's son: if David calls him Lord, how is he David's son? — Jesus's divine identity implied"],ot:"Exod 3:6 (God of Abraham — God of the living); Ps 110:1 (David's Lord)",v:"Love the Lord your God with all your heart and with all your soul and with all your mind… Love your neighbor as yourself (22:37,39)"},
+    ]
+  },
+  {
+    id:"m7", name:"Woes & Olivet Discourse (23–25)",
+    meta:"Discourse 5 — Judgment on Israel's leaders; the coming of the Son of Man; kingdom readiness",
+    chapters:[
+      {n:23,t:"Seven Woes Against the Scribes & Pharisees",badge:"disc",s:"The most confrontational chapter in Matthew. Seven woes expose the Pharisees' hypocrisy — they shut the kingdom, devour widows, and make converts worse than themselves.",args:["They sit in Moses's seat — do what they say, not what they do","They put heavy burdens on others but won't lift a finger","Seven woes: hypocrisy, proselytizing, oath-swearing, tithing while neglecting justice and mercy","'Whitewashed tombs' — outwardly righteous, inwardly full of dead men's bones","They build the tombs of the prophets but are the children of those who killed them","Jerusalem, Jerusalem — how often I wanted to gather your children like a hen"],ot:"Ezek 34 (bad shepherds); Jer 22:5 (your house left desolate echoes Jer's temple sermon)",v:"Woe to you, teachers of the law and Pharisees, you hypocrites! You are like whitewashed tombs (23:27)"},
+      {n:24,t:"Olivet Discourse: Signs & the Coming of the Son of Man",badge:"disc",s:"On the Mount of Olives Jesus predicts the temple's destruction. Signs of the end: false Christs, wars, tribulation, the abomination of desolation, the Son of Man coming. No one knows the day or hour.",args:["Not one stone will be left on another — 70 AD destruction (and/or eschatological end)","Birth pains: false Christs, wars, famines, earthquakes — not yet the end","Abomination of desolation (Dan 9:27) — flee; great tribulation","The Son of Man coming on clouds with power and great glory — unmissable as lightning","He will gather his elect from the four winds","Fig tree parable: when you see these things, the generation is near","No one knows the day or hour — not the angels, not the Son, only the Father"],ot:"Dan 7:13-14 (Son of Man on clouds); Dan 9:27 (abomination of desolation); Isa 13:10; Zech 12:10-14",v:"They will see the Son of Man coming on the clouds of heaven with power and great glory (24:30)"},
+      {n:25,t:"Three Parables of Kingdom Readiness",badge:"disc",s:"Three parables on readiness: the ten virgins, the talents, and the sheep and goats. The sheep and goats is Matthew's most vivid eschatological passage.",args:["Ten virgins: five foolish (no oil) locked out — 'I don't know you' — be ready, you don't know the hour","Talents: the one who buried his got nothing — faithful stewardship is expected","Sheep and goats: nations judged on how they treated 'the least of these' — the king identifies with them","Eternal life for the righteous; eternal punishment for the cursed","The 'least of these' debate: Jesus's missionaries or all poor? — significant interpretive question"],ot:"Ezek 34:17 (judgment between sheep and goats — the shepherd-king separating); Dan 12:2 (eternal life and contempt)",v:"Truly I tell you, whatever you did for one of the least of these brothers and sisters of mine, you did for me (25:40)"},
+    ]
+  },
+  {
+    id:"m8", name:"Passion & Resurrection (26–28)",
+    meta:"Narrative — The King is crucified and raised; the Great Commission launches the mission to the nations",
+    chapters:[
+      {n:26,t:"Anointing, Last Supper, Gethsemane & Arrest",badge:"narr",s:"Two days before Passover. A woman anoints Jesus for burial. The Last Supper instituted. Gethsemane: 'Not as I will, but as you will.' Judas betrays; Peter denies. Jesus before the Sanhedrin.",args:["Woman with alabaster jar: 'Wherever this gospel is preached, she will be remembered'","Last Supper: 'This is my body / my blood of the covenant poured out for many' — new covenant inaugurated","Gethsemane: the cup of wrath (Ps 75:8; Isa 51:17) — Jesus asks if there is another way; submits","Judas's betrayal for 30 silver coins (Zech 11:12-13) — Scripture fulfilled","Peter's denial predicted; the cock crows; Peter weeps bitterly","Jesus before Sanhedrin: 'You have said so' + Dan 7:13 citation — condemned for blasphemy"],ot:"Zech 11:12-13 (30 silver pieces); Ps 75:8; Isa 51:17 (cup of wrath); Dan 7:13 (Son of Man — cited by Jesus himself)",v:"This is my blood of the covenant, which is poured out for many for the forgiveness of sins (26:28)"},
+      {n:27,t:"Trial, Crucifixion & Death",badge:"narr",s:"Pilate tries Jesus — finds no fault but hands him over. Jesus is crucified at Golgotha. Darkness at noon. 'My God, my God, why have you forsaken me?' The veil tears. The centurion confesses.",args:["Judas's remorse — returns the silver; thrown into potter's field (fulfills Zech/Jer)","Pilate's wife's dream; Pilate washes his hands — 'His blood be on us and on our children'","The mocking at the cross echoes Psalm 22:7-8 precisely","Darkness from noon to 3pm — cosmic sign of judgment and mourning","'Eli, Eli, lema sabachthani' — Ps 22:1, the cry of dereliction — real abandonment in judgment","The temple veil torn top to bottom: access to God opened; the old system ended","Earthquake, rocks split, tombs opened — the new age bursts in at the cross","Centurion: 'Surely he was the Son of God' — a Gentile confesses first"],ot:"Ps 22 (the entire passion is saturated with Ps 22 — forsaken, mocked, garments divided); Isa 53; Amos 8:9 (darkness at noon)",v:"My God, my God, why have you forsaken me? (27:46)"},
+      {n:28,t:"Resurrection & the Great Commission",badge:"narr",s:"Early on the first day the women come. An angel: 'He is not here; he has risen.' The guards are bribed. Jesus appears in Galilee. All authority is given — go, make disciples of all nations.",args:["The resurrection is presented as historical fact — the guards, the stone, the angel","The Jewish leaders bribe the guards to say the body was stolen — Matthew addresses the counter-story","Jesus meets the women and then the Eleven in Galilee — back where the ministry began","'All authority in heaven and on earth has been given to me' — Son of Man receives the kingdom (Dan 7:14)","Great Commission: make disciples of all nations (ethnē) — scope expands from Israel only (ch. 10) to the world","Baptizing in the name of the Father, Son, and Holy Spirit — Trinitarian formula","'I am with you always, to the end of the age' — Emmanuel promise (1:23) bookends the gospel"],ot:"Dan 7:13-14 (all authority given to the Son of Man); Gen 12:3 (all nations blessed through Abraham's seed — now fulfilled)",v:"All authority in heaven and on earth has been given to me. Therefore go and make disciples of all nations… And surely I am with you always, to the very end of the age (28:18-20)"},
+    ]
+  },
+];
+
+// ════════════════════════════════════════════════
+//  STATE
+// ════════════════════════════════════════════════
+let activeBook = 'paul';
+let activeSec = PAUL[0].id;
+let searchTerm = '';
+
+// ════════════════════════════════════════════════
+//  HELPERS
+// ════════════════════════════════════════════════
+function currentData() { return activeBook === 'paul' ? PAUL : MATTHEW; }
+
+function hl(text) {
+  if (!searchTerm) return text;
+  const re = new RegExp('(' + searchTerm.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'gi');
+  return text.replace(re, '<mark>$1</mark>');
+}
+
+function badgeHTML(badge) {
+  if (!badge) return '';
+  const map = { disc: ['badge-disc','Discourse'], narr: ['badge-narr','Narrative'], ot: ['badge-ot','OT Focus'] };
+  if (!map[badge]) return '';
+  return `<span class="badge ${map[badge][0]}">${map[badge][1]}</span>`;
+}
+
+// ════════════════════════════════════════════════
+//  RENDER
+// ════════════════════════════════════════════════
+function renderAll() {
+  renderBookBtns();
+  renderLegend();
+  renderSectionNav();
+  renderList();
+}
+
+function renderBookBtns() {
+  document.getElementById('btnPaul').className = 'book-btn' + (activeBook === 'paul' ? ' active' : '');
+  document.getElementById('btnMatt').className = 'book-btn' + (activeBook === 'matthew' ? ' active' : '');
+}
+
+function renderLegend() {
+  document.getElementById('legendBar').style.display = activeBook === 'matthew' && !searchTerm ? 'flex' : 'none';
+}
+
+function renderSectionNav() {
+  const nav = document.getElementById('sectionNav');
+  if (searchTerm) { nav.innerHTML = ''; return; }
+  const data = currentData();
+  nav.innerHTML = data.map(s =>
+    `<button class="sec-tab ${s.id === activeSec ? 'active' : ''}" onclick="selectSec('${s.id}')">${s.name}</button>`
+  ).join('');
+}
+
+function cardHTML(ch, showBookLabel) {
+  return `<div class="card" onclick="toggleCard(this)">
+    <div class="card-head">
+      <div class="card-num">${ch.n}</div>
+      <div class="card-main">
+        ${ch.badge ? `<div class="badges">${badgeHTML(ch.badge)}</div>` : ''}
+        <div class="card-title">${hl(ch.t)}</div>
+        <div class="card-summary">${hl(ch.s)}</div>
+      </div>
+      <svg class="chevron" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="card-body">
+      <div class="detail-section">
+        <div class="detail-label">Key arguments & themes</div>
+        ${ch.args.map(a => `<div class="arg-item"><div class="arg-dot"></div><div class="arg-text">${hl(a)}</div></div>`).join('')}
+      </div>
+      ${ch.ot ? `<div class="ot-section"><strong style="display:block;margin-bottom:4px;font-size:11px;text-transform:uppercase;letter-spacing:0.06em;opacity:0.8;">OT Connections</strong>${hl(ch.ot)}</div>` : ''}
+      ${ch.v ? `<div class="key-verse">${hl(ch.v)}</div>` : ''}
+    </div>
+  </div>`;
+}
+
+function renderList() {
+  const area = document.getElementById('listArea');
+  if (searchTerm) {
+    let html = '';
+    let count = 0;
+    currentData().forEach(sec => {
+      let secHTML = '';
+      sec.chapters.forEach(ch => {
+        const combined = (ch.t+' '+ch.s+' '+ch.args.join(' ')+(ch.ot||'')+(ch.v||'')).toLowerCase();
+        if (combined.includes(searchTerm.toLowerCase())) {
+          secHTML += cardHTML(ch, false);
+          count++;
+        }
+      });
+      if (secHTML) html += `<div class="result-book-label">${sec.name}</div>${secHTML}`;
+    });
+    area.innerHTML = count ? html : `<div class="no-results">No results for "${searchTerm}"</div>`;
+    return;
+  }
+  const data = currentData();
+  const sec = data.find(s => s.id === activeSec);
+  if (!sec) return;
+  area.innerHTML = `<div class="section-label">${sec.meta}</div>` + sec.chapters.map(ch => cardHTML(ch, false)).join('');
+}
+
+// ════════════════════════════════════════════════
+//  INTERACTIONS
+// ════════════════════════════════════════════════
+function switchBook(book) {
+  activeBook = book;
+  activeSec = currentData()[0].id;
+  searchTerm = '';
+  document.getElementById('searchInput').value = '';
+  renderAll();
+}
+
+function selectSec(id) {
+  activeSec = id;
+  document.getElementById('listArea').scrollTop = 0;
+  renderSectionNav();
+  renderList();
+  // scroll the tab into view
+  const tab = document.querySelector(`.sec-tab.active`);
+  if (tab) tab.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+}
+
+function onSearch() {
+  searchTerm = document.getElementById('searchInput').value.trim();
+  renderAll();
+}
+
+function toggleCard(card) {
+  card.classList.toggle('open');
+}
+
+// init
+renderAll();
+</script>
+</body>
+</html>
