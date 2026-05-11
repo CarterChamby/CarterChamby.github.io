@@ -9,7 +9,7 @@ A mobile-optimized quick-reference tool for Paul's Epistles and the Gospel of Ma
 - Expandable cards with key verses, arguments, and typological notes
 
 ## Live site
-[CartherChamby.github.io](https://CartherChamby.github.io)
+[CarterChamby.github.io](https://CarterChamby.github.io)
 
 ## Usage
 Open on phone, add to home screen via Safari → Share → "Add to Home Screen" for app-like access.
